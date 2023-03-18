@@ -4,7 +4,8 @@ VERSION = "1.0.0"
 
 command = ARGV[0]
 
-@plugin_dir = File.join(Dir.home, 'code', 'discourse', 'plugins')
+@code_dir = File.join(Dir.home, 'code')
+@plugin_dir = File.join(@code_dir, 'discourse', 'plugins')
 
 def info
   puts "dplugin v#{VERSION}"
@@ -36,11 +37,19 @@ def command_remove(plugin)
   `rm #{plugin}`
 end
 
+def plugin_dir_exists?(plugin_name)
+  Dir.exist?(File.join(@code_dir, plugin_name))
+end
+
 case command
 when "add"
-  plugin = ARGV[1]
-  Dir.chdir(@plugin_dir)
-  `ln -s #{File.join(Dir.home, 'code', plugin)}`
+  plugin_name = ARGV[1]
+  if plugin_dir_exists?(plugin_name)
+    Dir.chdir(@plugin_dir)
+    `ln -s #{File.join(Dir.home, 'code', plugin_name)}`
+  else
+    puts "Cannot find the plugin directory for: #{plugin_name}"
+  end
 when "remove"
   plugin = ARGV[1]
 
